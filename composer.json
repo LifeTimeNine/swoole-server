@@ -1,0 +1,21 @@
+{
+    "name": "lifetime/swoole-server",
+    "description": "a simple encapsulation of Swoole services",
+    "type": "library",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "LifetimeNine",
+            "email": "2390904403@qq.com"
+        }
+    ],
+    "require": {
+        "ext-swoole": ">=4.5.8"
+    },
+    "autoload": {
+        "psr-4": {
+            "swoole\\": "src"
+        }
+    },
+    "minimum-stability": "dev"
+}
