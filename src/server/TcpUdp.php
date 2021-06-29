@@ -134,6 +134,30 @@ class TcpUdp
         $this->server->set($this->config->getConfig());
         // 绑定事件
         $this->bindEvent();
+        // 获取监控文件列表
+        $fileList = $this->config->getFileList();
+        if (!empty($this->config->getFileMoniotr()) && !empty($fileList) && is_array($fileList)) {
+            $table = new \Swoole\Table(1024);
+            $table->column('update_time', \Swoole\Table::TYPE_INT);
+            $table->create();
+            $this->server->addProcess(new \Swoole\Process(function($process) use($table, $fileList) {
+                \Swoole\Timer::tick(2000, function($timerId, $fileList, $table) {
+                    $hasUpdate = false;
+                    foreach ($fileList as $file) {
+                        if (!is_file($file)) continue;
+                        $lastUpdateTime = filectime($file);
+                        $fileKey = md5($file);
+                        $oldTime = $table->get($fileKey, 'update_time');
+                        if ($lastUpdateTime <> $table->get($fileKey, 'update_time')) {
+                            if ($oldTime !== false) $hasUpdate = true;
+                            $table->set($fileKey, ['update_time' => $lastUpdateTime]);
+                        }
+                    }
+                    clearstatcache();
+                    if ($hasUpdate) $this->server->reload();
+                }, $fileList, $table);
+            }, false, 2, 1));
+        }
         return $this;
     }
     /**

@@ -96,7 +96,7 @@ $config->setEventClass('TcpUdpEvent');
 $config = new \swoole\Config();
 // 设置事件类
 $config->setEventClass('TcpUdpEvent');
-// 初始化并启动服务器
+// 初始化服务器
 $server = (new \swoole\server\TcpUdp($config))->initServer();
 /**
  * 用户进程实现了广播功能，循环接收unixSocket的消息，并发给服务器的所有连接
@@ -134,5 +134,21 @@ function stop()
   echo "操作成功\n";
 }
 ```
-`getMasterPid` 可以获取服务器管理进程的pid，注意：必须是和启动时相同的配置。
+`getMasterPid` 可以获取服务器管理进程的pid，注意：必须是和启动时相同的配置。  
 `isRuning` 可以获取指定服务器的运行状态。
+
+### 文件监控
+文件监控需要配置 `Config` 的 `file_moniotr` 和 `file_list` 选项；**文件必须是绝对路径。**
+```php
+<?php
+$config = new \swoole\Config();
+$config->setFileMoniotr(true);
+$config->setFileList([
+    __DIR__ . '/func.php',
+]);
+```
+> 有几点要注意：
+
+>首先要注意新修改的代码必须要在 `OnWorkerStart` 事件中重新载入才会生效，比如某个类在 `OnWorkerStart` 之前就通过 composer 的 autoload 载入了就是不可以的。
+
+>其次 reload 还要配合这两个参数 `max_wait_time` 和 `reload_async`，设置了这两个参数之后就能实现异步安全重启。

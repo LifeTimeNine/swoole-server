@@ -1966,13 +1966,59 @@ class Config
         return $this->websocketHandshake;
     }
     /**
+     * 开启文件监控
+     * @var bool
+     */
+    protected $fileMonitor;
+    /**
+     * Set 开启文件监控
+     * @param   bool    $fileMoniotr
+     * @return $this
+     */
+    public function setFileMoniotr($fileMoniotr)
+    {
+        $this->fileMonitor = $fileMoniotr;
+        return $this;
+    }
+    /**
+     * Get 开启文件监控
+     * @return bool
+     */
+    public function getFileMoniotr()
+    {
+        return $this->fileMonitor;
+    }
+    /**
+     * 监控文件列表
+     * @var array
+     */
+    protected $fileList;
+    /**
+     * Set 监控文件列表
+     * @param   array   $fileList
+     * @return  $this
+     */
+    public function setFileList($fileList)
+    {
+        $this->fileList = $fileList;
+        return $this;
+    }
+    /**
+     * Get  监控文件列表
+     * @return array
+     */
+    public function getFileList()
+    {
+        return $this->fileList;
+    }
+    /**
      * 获取配置
      * @return array
      */
     public function getConfig()
     {
         // 忽略的属性
-        $ignore = ['host', 'port', 'mode', 'sockeType', 'eventClass','websocketHandshake'];
+        $ignore = ['host','port','mode','sockeType','eventClass','websocketHandshake','fileMonitor','fileList'];
         $config = [];
         foreach($this as $k => $v) {
             if (!in_array($k, $ignore) && $v !== null) {
