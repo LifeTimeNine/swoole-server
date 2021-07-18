@@ -85,7 +85,7 @@ $config = new \swoole\Config();
 // 设置事件类
 $config->setEventClass('TcpUdpEvent');
 // 初始化并启动服务器
-(new \swoole\server\TcpUdp($config))->initServer()->start();
+\swoole\server\TcpUdp::instance($config)->initServer()->start();
 ```
 
 如果你想在启动之前做一些其他事情，可以这样操作
@@ -97,7 +97,7 @@ $config = new \swoole\Config();
 // 设置事件类
 $config->setEventClass('TcpUdpEvent');
 // 初始化服务器
-$server = (new \swoole\server\TcpUdp($config))->initServer();
+$server = \swoole\server\TcpUdp::instance($config)->initServer();
 /**
  * 用户进程实现了广播功能，循环接收unixSocket的消息，并发给服务器的所有连接
  */
@@ -124,7 +124,7 @@ function stop()
 {
   // 创建配置类
   $config = new \swoole\Config();
-  $server = new \swoole\server\TcpUdp($config);
+  $server = \swoole\server\TcpUdp::instance($config);
   $masterPid = $server->getMasterPid();
   if (!$server->isRunimg($masterPid)) {
     echo "没有正在运行的服务器\n";
@@ -152,3 +152,61 @@ $config->setFileList([
 >首先要注意新修改的代码必须要在 `OnWorkerStart` 事件中重新载入才会生效，比如某个类在 `OnWorkerStart` 之前就通过 composer 的 autoload 载入了就是不可以的。
 
 >其次 reload 还要配合这两个参数 `max_wait_time` 和 `reload_async`，设置了这两个参数之后就能实现异步安全重启。
+
+## 定时器服务
+
+### 配置
+```php
+<?php
+    $config = [
+        'port' => 9503, // 端口
+        'task_worker_num' => 1, // 任务工作进程数
+        'pid_file' => '', // PID文件地址
+        'task_file_path' => '', // 任务列表文件地址
+        'log_path' => '', // 日志文件地址
+    ];
+>
+```
+
+### 任务类
+任务类继承 `\swoole\extend\abstcats` 抽象类，需要完成 `hanndle` 方法
+```php
+<?php
+namespace timer;
+
+use swoole\extend\abstracts\Timer;
+
+class Test extends Timer
+{
+    /**
+     * 定时任务 秒 分 时 天 月 周
+     * @var string
+     */
+    public $crontab = "*/3 * * * * *";
+    /**
+     * 是否启用
+     * @var boolean
+     */
+    public $enable = false;
+
+    public function handle()
+    {
+        // 业务
+    }
+}
+>
+```
+`crontab` 属性参照 Linux 的 Crontab 配置
+
+> 注意：这里比 Linux 的 Crontab 多了一个秒
+
+### 启动
+```php
+<?php
+swoole\extend\server\Timer::instance([
+    'task_file_path' => __DIR__ . "/crontab.php",
+    'log_path' => __DIR__ . "/log/timer/",
+])->start();
+>
+```
+除了 `start` 之外，还有 `stop`、`reload`和`restart`方法。

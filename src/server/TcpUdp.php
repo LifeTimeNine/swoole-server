@@ -48,10 +48,28 @@ class TcpUdp
     ];
 
     /**
+     * 实例列表
+     * @var array
+     */
+    protected static $instances = [];
+
+    /**
+     * 实例化
+     * @param   array|\swoole\Config
+     * @return  $this
+     */
+    public static function instance($config = [])
+    {
+        $key = md5(get_called_class() . serialize($config));
+        if (isset(self::$instances[$key])) return self::$instances[$key];
+        return self::$instances[$key] = new static($config);
+    }
+
+    /**
      * 构造函数
      * @param   array|\swoole\Config
      */
-    public function __construct($config = null)
+    private function __construct($config = null)
     {
         if (!empty($config)) {
             $this->setConfig($config);
@@ -111,6 +129,16 @@ class TcpUdp
         foreach($this->events as $event) {
             $this->server->on(strtolower(substr($event, 2)), [$eventClass, $event]);
         }
+        return $this;
+    }
+    /**
+     * 设置服务器名称
+     * @param   string  $name
+     * @return  $this
+     */
+    public function setName($name)
+    {
+        $this->serverName = $name;
         return $this;
     }
     /**
@@ -177,9 +205,9 @@ class TcpUdp
         if (empty($this->config->getPidFile())) {
             $host = $this->config->getHost() ?: '0.0.0.0';
             $port = $this->config->getPort() ?: 9501;
-            return (int)file_get_contents("/tmp/" . md5("{$host}{$port}") . ".pid");
+            return (int)@file_get_contents("/tmp/" . md5("{$host}{$port}") . ".pid");
         } else {
-            return (int)file_get_contents($this->config->getPidFile());
+            return (int)@file_get_contents($this->config->getPidFile());
         }
     }
     /**

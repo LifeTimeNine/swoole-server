@@ -72,21 +72,21 @@ class TcpUdp
      * @param   int $src_worker_id  投递任务的 worker 进程 id
      * @param   mixed $data 任务的数据内容
      */
-    public static function onTask($server, int $task_id, int $src_worker_id, mixed $data) {}
+    public static function onTask($server, int $task_id, int $src_worker_id, $data) {}
     /**
      * 此回调函数在 worker 进程被调用，当 worker 进程投递的任务在 task 进程中完成时， task 进程会通过 \Swoole\Server->finish() 方法将任务处理的结果发送给 worker 进程
      * @param   \Swoole\Server $server \Swoole\Server 对象
      * @param   int $task_id    执行任务的 task 进程 id
      * @param   mixed $data 任务的数据内容
      */
-    public static function onFinish($server, int $task_id, mixed $data) {}
+    public static function onFinish($server, int $task_id, $data) {}
     /**
      * 当工作进程收到由 $server->sendMessage() 发送的 unixSocket 消息时会触发 onPipeMessage 事件。worker/task 进程都可能会触发 onPipeMessage 事件
      * @param   \Swoole\Server $server \Swoole\Server 对象
      * @param   int $src_worker_id  消息来自哪个 Worker 进程
      * @param   mixed $message  消息内容，可以是任意 PHP 类型
      */
-    public static function onPipeMessage($server, int $src_worker_id, mixed $message) {}
+    public static function onPipeMessage($server, int $src_worker_id, $message) {}
     /**
      * 当 Worker/Task 进程发生异常后会在 Manager 进程内回调此函数
      * @param   \Swoole\Server $server \Swoole\Server 对象
