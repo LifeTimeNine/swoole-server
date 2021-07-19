@@ -3,7 +3,7 @@
  * @Description   定时器
  * @Author        lifetime
  * @Date          2021-07-17 16:35:30
- * @LastEditTime  2021-07-18 18:41:41
+ * @LastEditTime  2021-07-19 11:37:50
  * @LastEditors   lifetime
  */
 namespace swoole\extend\server;
@@ -28,6 +28,7 @@ class Timer
         'pid_file' => '', // PID文件地址
         'task_file_path' => '', // 任务列表文件地址
         'log_path' => '', // 日志文件地址
+        'daemonize' => false, // 以守护进程的方式运行
     ];
     /**
      * 服务器示例
@@ -68,6 +69,7 @@ class Timer
         $swooleConfig->setEventClass('\swoole\extend\event\Timer');
         $swooleConfig->setMaxWaitTime(10);
         $swooleConfig->setReloadAsync(true);
+        $swooleConfig->setDaemonize($this->config['daemonize'] == true);
         $this->server = TcpUdp::instance($swooleConfig)->setName('Timer');
     }
 
@@ -117,5 +119,12 @@ class Timer
     public function restart()
     {
         $this->server->restart();
+    }
+    /**
+     * 删除PID文件
+     */
+    public function removePidFile()
+    {
+        $this->server->removePidFile();
     }
 }

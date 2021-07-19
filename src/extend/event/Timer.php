@@ -3,11 +3,12 @@
  * @Description   定时器事件
  * @Author        lifetime
  * @Date          2021-07-17 17:08:20
- * @LastEditTime  2021-07-18 18:37:37
+ * @LastEditTime  2021-07-19 11:32:14
  * @LastEditors   lifetime
  */
 namespace swoole\extend\event;
 
+use ReflectionClass;
 use swoole\event\TcpUdp;
 use swoole\Output;
 
@@ -28,8 +29,11 @@ class Timer extends TcpUdp
                     $task = new $item;
                     if (!$task->enable) continue;
                     $crontab = preg_split("/(\s+)/", $task->crontab);
+                    $ref = new ReflectionClass($task);
                     $taskList[] = [
                         'class' => $item,
+                        'file_path' => $ref->getFileName(),
+                        'last_update_time' => filectime($ref->getFileName()),
                         'second' => self::parseCrontab($crontab[0], 0, 59),
                         'minute' => self::parseCrontab($crontab[1], 0, 59),
                         'hours' => self::parseCrontab($crontab[2], 0, 23),
@@ -38,12 +42,14 @@ class Timer extends TcpUdp
                         'week' => self::parseCrontab($crontab[5], 0, 6)
                     ];
                     unset($task);
+                    unset($ref);
                 }
                 Output::instance()->writeln(count($taskList) . " tasks initialized");
-                clearstatcache();
                 $lastUpdateTime = filectime($server->taskFilePath);
+                if (count($taskList) == 0) clearstatcache();
                 $server->tick(1000, function($timeId) use($server, $taskList, $lastUpdateTime) {
                     $time = time();
+                    $update = false;
                     foreach($taskList as $item) {
                         if (
                             in_array(date('s', $time), $item['second']) &&
@@ -56,9 +62,10 @@ class Timer extends TcpUdp
                             
                             $server->task(['class' => $item['class']]);
                         }
+                        if ($item['last_update_time'] <> filectime($item['file_path'])) $update = true;
                     }
-                    clearstatcache();
-                    if ($lastUpdateTime <> filectime($server->taskFilePath)) {
+                    if (count($taskList) == 0) clearstatcache();
+                    if ($lastUpdateTime <> filectime($server->taskFilePath) || $update) {
                         $server->clearTimer($timeId);
                         $server->reload();
                     }

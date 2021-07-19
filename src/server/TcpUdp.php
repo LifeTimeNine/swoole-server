@@ -211,6 +211,24 @@ class TcpUdp
         }
     }
     /**
+     * 删除PID文件
+     */
+    public function removePidFile()
+    {
+        if (empty($this->config->getPidFile())) {
+            $host = $this->config->getHost() ?: '0.0.0.0';
+            $port = $this->config->getPort() ?: 9501;
+            $pidFile = "/tmp/" . md5("{$host}{$port}") . ".pid";
+        } else {
+            $pidFile = $this->config->getPidFile();
+        }
+        if (is_file($pidFile)) {
+            return unlink($pidFile);
+        } else {
+            return true;
+        }
+    }
+    /**
      * 判断服务器是否正在运行
      * @param   int     $pid
      * @return  bool

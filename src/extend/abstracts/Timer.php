@@ -3,7 +3,7 @@
  * @Description   定时任务接口
  * @Author        lifetime
  * @Date          2021-07-17 17:29:44
- * @LastEditTime  2021-07-18 19:39:26
+ * @LastEditTime  2021-07-19 10:05:09
  * @LastEditors   lifetime
  */
 namespace swoole\extend\abstracts;
@@ -22,7 +22,7 @@ abstract class Timer
      * 是否启用
      * @var boolean
      */
-    public $enable = false;
+    public $enable = true;
 
     /**
      * 执行逻辑
