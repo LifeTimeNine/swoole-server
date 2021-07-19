@@ -3,7 +3,7 @@
  * @Description   定时器
  * @Author        lifetime
  * @Date          2021-07-17 16:35:30
- * @LastEditTime  2021-07-19 11:37:50
+ * @LastEditTime  2021-07-19 19:07:33
  * @LastEditors   lifetime
  */
 namespace swoole\extend\server;
@@ -29,6 +29,7 @@ class Timer
         'task_file_path' => '', // 任务列表文件地址
         'log_path' => '', // 日志文件地址
         'daemonize' => false, // 以守护进程的方式运行
+        'hit_update' => true, // 热更新
     ];
     /**
      * 服务器示例
@@ -43,7 +44,7 @@ class Timer
 
     /**
      * 实例化
-     * @param   array|\swoole\Config
+     * @param   array
      * @return  $this
      */
     public static function instance($config = [])
@@ -97,6 +98,7 @@ class Timer
         $this->server->initServer();
         $this->server->getServer()->taskFilePath = $this->config['task_file_path'];
         $this->server->getServer()->logPath = $this->config['log_path'];
+        $this->server->getServer()->hitUpdate = $this->config['hit_update'];
         $this->server->start();
     }
     /**

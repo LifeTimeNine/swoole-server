@@ -165,6 +165,7 @@ $config->setFileList([
         'task_file_path' => '', // 任务列表文件地址
         'log_path' => '', // 日志文件地址
         'daemonize' => false, // 以守护进程的方式运行
+        'hit_update' => true, // 热更新
     ];
 >
 ```

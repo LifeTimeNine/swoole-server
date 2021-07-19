@@ -2,7 +2,7 @@
     "name": "lifetime/swoole-server",
     "description": "a simple encapsulation of Swoole services",
     "type": "library",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "authors": [
         {
             "name": "LifetimeNine",

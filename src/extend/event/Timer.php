@@ -3,7 +3,7 @@
  * @Description   定时器事件
  * @Author        lifetime
  * @Date          2021-07-17 17:08:20
- * @LastEditTime  2021-07-19 11:32:14
+ * @LastEditTime  2021-07-19 19:06:01
  * @LastEditors   lifetime
  */
 namespace swoole\extend\event;
@@ -65,7 +65,7 @@ class Timer extends TcpUdp
                         if ($item['last_update_time'] <> filectime($item['file_path'])) $update = true;
                     }
                     if (count($taskList) == 0) clearstatcache();
-                    if ($lastUpdateTime <> filectime($server->taskFilePath) || $update) {
+                    if ($server->hitUpdate && ($lastUpdateTime <> filectime($server->taskFilePath) || $update)) {
                         $server->clearTimer($timeId);
                         $server->reload();
                     }
