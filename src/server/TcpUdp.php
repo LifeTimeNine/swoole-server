@@ -274,7 +274,7 @@ class TcpUdp
                 return;
             }
             sleep(1);
-        } while (time() - $time <= 5);
+        } while (time() - $time <= 10);
         Output::instance()->writeln('> <error>filure</error>');
     }
     /**
