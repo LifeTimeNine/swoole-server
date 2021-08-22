@@ -129,6 +129,7 @@ class TcpUdp
         foreach($this->events as $event) {
             $this->server->on(strtolower(substr($event, 2)), [$eventClass, $event]);
         }
+        $eventClass::$server = $this->server;
         return $this;
     }
     /**
