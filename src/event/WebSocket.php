@@ -31,4 +31,11 @@ class WebSocket extends TcpUdp
      * @param   \Swoole\Http\Response $response HTTP 响应对象
      */
     public static function onRequest($request, $response) {}
+
+    /**
+     * 客户端断开连接的事件
+     * @param   \Swoole\Server $server \Swoole\Server 对象
+     * @param   int $fd 连接的文件描述符
+     */
+    public static function onDisconnect($server, $fd) {}
 }

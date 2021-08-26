@@ -22,7 +22,7 @@ class WebSocket extends TcpUdp
      */
     protected function initialize()
     {
-        $this->appendEvents(['onHandShake','onOpen','onMessage','onRequest']);
+        $this->appendEvents(['onHandShake','onOpen','onMessage','onRequest', 'onDisconnect']);
         $this->config->setOpenWebsocketProtocol(true);
         if (!$this->config->getWebsocketHandshake()) {
             $this->removeEvents(['onHandShake']);
