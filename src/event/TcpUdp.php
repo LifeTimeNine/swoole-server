@@ -10,7 +10,7 @@ class TcpUdp
 {
     /**
      * swoole 服务器类
-     * @var \Swoole\Server;
+     * @var \Swoole\Server
      */
     public static $server;
     /**
