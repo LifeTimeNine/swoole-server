@@ -3,7 +3,7 @@
  * @Description   定时器事件
  * @Author        lifetime
  * @Date          2021-07-17 17:08:20
- * @LastEditTime  2021-07-19 19:06:01
+ * @LastEditTime  2021-09-19 08:43:25
  * @LastEditors   lifetime
  */
 namespace swoole\extend\event;
@@ -101,8 +101,8 @@ class Timer extends TcpUdp
                 mkdir($server->logPath, 0777, true);
             }
             $date = date('Y-m-d H:i:s');
-            $fileNmae = date('Y-m-d') . '.log';
-            @file_put_contents($server->logPath . $fileNmae, "[{$date}] [{$data['class']}] {$data['message']}" . PHP_EOL, FILE_APPEND | LOCK_EX);
+            $fileName = date('Y-m-d') . '.log';
+            @file_put_contents("{$server->logPath}/{$fileName}", "[{$date}] [{$data['class']}] {$data['message']}" . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
     }
 
