@@ -3,7 +3,7 @@
  * @Description   定时器事件
  * @Author        lifetime
  * @Date          2021-07-17 17:08:20
- * @LastEditTime  2021-09-19 08:43:25
+ * @LastEditTime  2021-09-19 09:10:25
  * @LastEditors   lifetime
  */
 namespace swoole\extend\event;
@@ -11,6 +11,7 @@ namespace swoole\extend\event;
 use ReflectionClass;
 use swoole\event\TcpUdp;
 use swoole\Output;
+use Swoole\Timer as SwooleTimer;
 
 /**
  * 定时器事件
@@ -74,6 +75,11 @@ class Timer extends TcpUdp
                 Output::instance()->writeln("0 tasks initialized");
             }
         }
+    }
+
+    public static function onWorkerExit($server, int $workerId)
+    {
+        SwooleTimer::clearAll();
     }
 
     public static function onTask($server, int $task_id, int $src_worker_id, $data)
