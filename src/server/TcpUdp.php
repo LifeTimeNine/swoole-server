@@ -129,7 +129,6 @@ class TcpUdp
         foreach($this->events as $event) {
             $this->server->on(strtolower(substr($event, 2)), [$eventClass, $event]);
         }
-        $eventClass::$server = $this->server;
         return $this;
     }
     /**
@@ -297,11 +296,16 @@ class TcpUdp
     }
     /**
      * 重启服务器
+     * @param   callable    $initCall  闭包中执行初始化之后的逻辑
      */
-    public function restart()
+    public function restart($initCall = null)
     {
         $this->stop();
         sleep(1);
+        $this->initServer();
+        if (is_callable($initCall)) {
+            $initCall($this);
+        }
         $this->start();
     }
 }

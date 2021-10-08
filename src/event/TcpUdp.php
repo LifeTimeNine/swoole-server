@@ -9,11 +9,6 @@ namespace swoole\event;
 class TcpUdp
 {
     /**
-     * swoole 服务器类
-     * @var \Swoole\Server
-     */
-    public static $server;
-    /**
      * 启动后在主进程（master）的主线程回调此函数
      * @param   \Swoole\Server $server \Swoole\Server 对象
      */

@@ -3,7 +3,7 @@
  * @Description   定时器事件
  * @Author        lifetime
  * @Date          2021-07-17 17:08:20
- * @LastEditTime  2021-09-19 09:10:25
+ * @LastEditTime  2021-10-08 17:48:18
  * @LastEditors   lifetime
  */
 namespace swoole\extend\event;
@@ -25,15 +25,18 @@ class Timer extends TcpUdp
             $taskFile = require($server->taskFilePath);
             if (is_array($taskFile) && count($taskFile) > 0) {
                 $taskList = [];
+                $enableTasks - 0;
                 foreach($taskFile as $item) {
                     if (!class_exists($item)) continue;
                     $task = new $item;
-                    if (!$task->enable) continue;
-                    $crontab = preg_split("/(\s+)/", $task->crontab);
+                    $crontab = preg_split("/(\s+)/", trim($task->crontab));
+                    $crontab = array_pad($crontab, 6, '*');
+                    if ($task->enable) ++$enableTasks;
                     $ref = new ReflectionClass($task);
                     $taskList[] = [
                         'class' => $item,
                         'file_path' => $ref->getFileName(),
+                        'enable' => $task->enable,
                         'last_update_time' => filectime($ref->getFileName()),
                         'second' => self::parseCrontab($crontab[0], 0, 59),
                         'minute' => self::parseCrontab($crontab[1], 0, 59),
@@ -45,7 +48,8 @@ class Timer extends TcpUdp
                     unset($task);
                     unset($ref);
                 }
-                Output::instance()->writeln(count($taskList) . " tasks initialized");
+                $enableTasks  = $enableTasks ?: '0';
+                Output::instance()->writeln(count($taskList) . " tasks initialized; {$enableTasks} tasks enabled;");
                 $lastUpdateTime = filectime($server->taskFilePath);
                 if (count($taskList) == 0) clearstatcache();
                 $server->tick(1000, function($timeId) use($server, $taskList, $lastUpdateTime) {
@@ -53,6 +57,7 @@ class Timer extends TcpUdp
                     $update = false;
                     foreach($taskList as $item) {
                         if (
+                            $item['enable'] &&
                             in_array(date('s', $time), $item['second']) &&
                             in_array(date('i', $time), $item['minute']) &&
                             in_array(date('H', $time), $item['hours']) &&
@@ -107,8 +112,8 @@ class Timer extends TcpUdp
                 mkdir($server->logPath, 0777, true);
             }
             $date = date('Y-m-d H:i:s');
-            $fileName = date('Y-m-d') . '.log';
-            @file_put_contents("{$server->logPath}/{$fileName}", "[{$date}] [{$data['class']}] {$data['message']}" . PHP_EOL, FILE_APPEND | LOCK_EX);
+            $fileNmae = date('Y-m-d') . '.log';
+            @file_put_contents($server->logPath . $fileNmae, "[{$date}] [{$data['class']}] {$data['message']}" . PHP_EOL, FILE_APPEND | LOCK_EX);
         }
     }
 

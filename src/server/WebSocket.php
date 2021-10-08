@@ -23,27 +23,9 @@ class WebSocket extends TcpUdp
     protected function initialize()
     {
         $this->appendEvents(['onHandShake','onOpen','onMessage','onRequest']);
-        if ($this->compare_version(swoole_version(), '4.7.0')) {
-            $this->appendEvents(['onDisconnect']);
-        }
         $this->config->setOpenWebsocketProtocol(true);
         if (!$this->config->getWebsocketHandshake()) {
             $this->removeEvents(['onHandShake']);
         }
-    }
-
-    /**
-     * 判断 v1 是否大于等于 v2
-     */
-    private function compare_version($version1, $version2)
-    {
-        $version1 = explode('.', $version1);
-        $version2 = explode('.', $version2);
-        foreach($version1 as $key => $value) {
-            if (!isset($version2[$key])) return true;
-            if ($value > $version2[$key]) return true;
-            if ($value < $version2[$key]) return false;
-        }
-        return true;
     }
 }

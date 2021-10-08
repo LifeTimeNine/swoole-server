@@ -3,7 +3,7 @@
  * @Description   定时器
  * @Author        lifetime
  * @Date          2021-07-17 16:35:30
- * @LastEditTime  2021-07-19 19:07:33
+ * @LastEditTime  2021-10-08 18:08:59
  * @LastEditors   lifetime
  */
 namespace swoole\extend\server;
@@ -120,7 +120,11 @@ class Timer
      */
     public function restart()
     {
-        $this->server->restart();
+        $this->server->restart(function($server) {
+            $server->getServer()->taskFilePath = $this->config['task_file_path'];
+            $server->getServer()->logPath = $this->config['log_path'];
+            $server->getServer()->hitUpdate = $this->config['hit_update'];
+        });
     }
     /**
      * 删除PID文件
