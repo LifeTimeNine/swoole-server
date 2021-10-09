@@ -25,7 +25,7 @@ class Timer extends TcpUdp
             $taskFile = require($server->taskFilePath);
             if (is_array($taskFile) && count($taskFile) > 0) {
                 $taskList = [];
-                $enableTasks - 0;
+                $enableTasks = 0;
                 foreach($taskFile as $item) {
                     if (!class_exists($item)) continue;
                     $task = new $item;
